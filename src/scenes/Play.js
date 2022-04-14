@@ -22,6 +22,8 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+
+
         // place tile sprite
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0);
         // green UI background
@@ -32,11 +34,12 @@ class Play extends Phaser.Scene {
         this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         // add rocket (p1)
-        this.cannon1 = new Cannon(this, game.config.width / 2, game.config.height - borderUISize - borderPadding, 'cannon').setOrigin(0.5, 0);
+        this.physics.add.sprite(100,100,"spaceship");
+        this.cannon = new Cannon(this, game.config.width / 2, game.config.height - borderUISize - borderPadding, 'cannon').setOrigin(0.5, 0);
         
         // mouse input position
         input = this.input;
-        // add cannon
+        
         
         
         
@@ -98,12 +101,21 @@ class Play extends Phaser.Scene {
         }
         this.starfield.tilePositionX -= 4; 
         if (!this.gameOver) {
+            this.cannon.update();
             //this.p1Rocket.update();         // update rocket sprite
             this.ship01.update();           // update spaceships (x3)
             this.ship02.update();
             this.ship03.update();
 
         }
+        
+
+        // check collisions
+
+        //for(let i = spaceships.length; i > 0; i--){
+
+
+        //}
 
         // // check collisions
         // if (this.checkCollision(this.p1Rocket, this.ship03)) {
