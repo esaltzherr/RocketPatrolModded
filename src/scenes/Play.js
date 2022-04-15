@@ -9,19 +9,27 @@ class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
     }
-    
+
     preload() {
         // load images/tile sprites
         this.load.image('rocket', './assets/rocket.png');
         this.load.image('cannon', './assets/spaceship.png');
         this.load.image('spaceship', './assets/spaceship.png');
         this.load.image('starfield', './assets/starfield.png');
+        this.load.image('wall', './assets/wall.png');
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', { frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9 });
-        
+
     }
 
     create() {
+        this.rockets = this.physics.add.group();
+        //this.rockets.enableBody = true;
+        this.ships = this.physics.add.group();
+        //this.ships.enableBody = true;
+
+        //wall boundry because sprite collisions
+        this.walls = this.physics.add.group();
 
 
         // place tile sprite
@@ -34,15 +42,15 @@ class Play extends Phaser.Scene {
         this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         // add rocket (p1)
-        this.physics.add.sprite(100,100,"spaceship");
+        //this.physics.add.sprite(100,100,"spaceship");
         this.cannon = new Cannon(this, game.config.width / 2, game.config.height - borderUISize - borderPadding, 'cannon').setOrigin(0.5, 0);
-        
+
         // mouse input position
         input = this.input;
-        
-        
-        
-        
+        mouse = this.input.mousePointer;
+
+
+
         // define keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -50,13 +58,23 @@ class Play extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         // add spaceships (x3)
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 4, 'spaceship', 0, 30).setOrigin(0, 0);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 5 + borderPadding * 2, 'spaceship', 0, 20).setOrigin(0, 0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 4, 'spaceship', 0, 10).setOrigin(0, 0);
+        // this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 4, 'spaceship', 0, 30).setOrigin(0, 0);
+        // this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 5 + borderPadding * 2, 'spaceship', 0, 20).setOrigin(0, 0);
+        // this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 4, 'spaceship', 0, 10).setOrigin(0, 0);
         
-        
+        this.walls.create(-50,0,'wall');
+        this.shipstartingx = 700;
+        let shipspeed = 300;
+        var j = this.ships.create(this.shipstartingx, 150, 'spaceship');
+        this.physics.moveTo(j, j.x -10, j.y, shipspeed);
+        j = this.ships.create(this.shipstartingx, 200, 'spaceship');
+        this.physics.moveTo(j, j.x -10, j.y, shipspeed);
+        j = this.ships.create(this.shipstartingx, 250, 'spaceship');
+        this.physics.moveTo(j, j.x -10, j.y, shipspeed);
+
+
         //this.cannon = new Cannon(this, 100, 100, 'cannon', 0 ,10);
-        
+
         // animation config
         this.anims.create({
             key: 'explode',
@@ -99,16 +117,29 @@ class Play extends Phaser.Scene {
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene");
         }
-        this.starfield.tilePositionX -= 4; 
+        this.starfield.tilePositionX -= 4;
         if (!this.gameOver) {
             this.cannon.update();
             //this.p1Rocket.update();         // update rocket sprite
-            this.ship01.update();           // update spaceships (x3)
-            this.ship02.update();
-            this.ship03.update();
+            // this.ship01.update();           // update spaceships (x3)
+            // this.ship02.update();
+            // this.ship03.update();
 
         }
+        //console.log(this.cannon.fireCooldown);
+        //console.log(Phaser.Input.Keyboard);
+        //console.log(this.cannon.fireCooldown);
+        if (mouse.isDown && this.cannon.fireCooldown <= 0) {
+            
+            this.fire();
+
+        }
+
+        // collisons
+        this.physics.add.overlap(this.ships, this.rockets, this.collide, null, this);
+        this.physics.add.overlap(this.ships, this.walls, this.rocketReset, null, this);
         
+
 
         // check collisions
 
@@ -157,5 +188,25 @@ class Play extends Phaser.Scene {
         // score add and repaint
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
+    }
+    fire() {
+        let rocketSpeed = 400;
+        //let rocket = this.physics.add.sprite(this.cannon.x, this.cannon.y, 'rocket');
+        //this.physics.moveTo(rocket, input.x, input.y, rocketSpeed);
+        
+        var h = this.rockets.create(this.cannon.x, this.cannon.y, 'rocket');
+        this.physics.moveTo(h, input.x, input.y, rocketSpeed);
+
+        this.cannon.fireCooldown = 100;
+        this.cannon.sfxRocket.play();  // play sfx
+        //console.log(this.rockets);
+    }
+    rocketReset(ships, walls){
+        ships.x = this.shipstartingx;
+    }
+    collide(ships, rockets){
+        this.p1score += 10;
+        ships.x = this.shipstartingx;
+        rockets.destroy();
     }
 }
