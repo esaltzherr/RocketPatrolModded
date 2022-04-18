@@ -17,8 +17,7 @@ class Cannon extends Phaser.GameObjects.Sprite {
     update() {
 
         let angle = Phaser.Math.Angle.Between(this.x, this.y, input.x, input.y);
-        this.angle = angle + Math.PI/2;
-
+        this.angle = angle * (180/Math.PI) + 90;
         // if (keyLEFT.isDown) {
         //     this.angle -= this.rotateSpeed;
         // }
