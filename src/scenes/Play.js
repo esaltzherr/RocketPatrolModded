@@ -17,6 +17,7 @@ class Play extends Phaser.Scene {
         this.load.image('seagul', './assets/seagul.png');
         this.load.image('waves', './assets/waves.png');
         this.load.image('wall', './assets/wall.png');
+        this.load.image('parrot', './assets/parrot.png');
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', { frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9 });
 
@@ -26,6 +27,7 @@ class Play extends Phaser.Scene {
         this.rockets = this.physics.add.group();
         //this.rockets.enableBody = true;
         this.ships = this.physics.add.group();
+        this.parrots = this.physics.add.group();
         //this.ships.enableBody = true;
 
         //wall boundry because sprite collisions
@@ -64,6 +66,7 @@ class Play extends Phaser.Scene {
         
         this.walls.create(-50,0,'wall');
         this.shipstartingx = 700;
+        this.parrotstartingx = 700;
         let shipspeed = 300;
         var j = this.ships.create(this.shipstartingx, 150, 'seagul');
         this.physics.moveTo(j, j.x -10, j.y, shipspeed);
@@ -71,6 +74,8 @@ class Play extends Phaser.Scene {
         this.physics.moveTo(j, j.x -10, j.y, shipspeed);
         j = this.ships.create(this.shipstartingx, 250, 'seagul');
         this.physics.moveTo(j, j.x -10, j.y, shipspeed);
+        var p = this.parrots.create(this.parrotstartingx, 120, 'parrot');
+        this.physics.moveTo(p, p.x -10, p.y, 500);
 
 
         //this.cannon = new Cannon(this, 100, 100, 'cannon', 0 ,10);
@@ -138,7 +143,8 @@ class Play extends Phaser.Scene {
         // collisons
         this.physics.add.overlap(this.ships, this.rockets, this.collide, null, this);
         this.physics.add.overlap(this.ships, this.walls, this.rocketReset, null, this);
-        
+        this.physics.add.overlap(this.parrots, this.rockets, this.parrotpoints, null, this);
+        this.physics.add.overlap(this.parrots, this.walls, this.parrotReset, null, this);
 
 
         // check collisions
@@ -205,10 +211,19 @@ class Play extends Phaser.Scene {
     rocketReset(ships, walls){
         ships.x = this.shipstartingx;
     }
+    parrotReset(parrots, walls){
+        parrots.x = this.parrotstartingx;
+    }
     collide(ships, rockets){
         this.score += 10;
         this.scoreLeft.text = this.score;
         ships.x = this.shipstartingx;
+        rockets.destroy();
+    }
+    parrotpoints(parrots, rockets){
+        this.score += 50;
+        this.scoreLeft.text = this.score;
+        parrots.x = this.shipstartingx;
         rockets.destroy();
     }
 }
