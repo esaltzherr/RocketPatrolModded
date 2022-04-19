@@ -215,12 +215,14 @@ class Play extends Phaser.Scene {
         parrots.x = this.parrotstartingx;
     }
     collide(ships, rockets){
+        this.sound.play('sfx_explosion');
         this.score += 10;
         this.scoreLeft.text = this.score;
         ships.x = this.shipstartingx;
         rockets.destroy();
     }
     parrotpoints(parrots, rockets){
+        this.sound.play('sfx_parrot');
         this.score += 50;
         this.scoreLeft.text = this.score;
         parrots.x = this.shipstartingx;

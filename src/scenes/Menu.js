@@ -5,9 +5,10 @@ class Menu extends Phaser.Scene {
 
   preload() {
     // load audio
-    this.load.audio('sfx_select', './assets/assets_blip_select12.wav');
-    this.load.audio('sfx_explosion', './assets/assets_explosion38.wav');
-    this.load.audio('sfx_rocket', './assets/assets_rocket_shot.wav');
+    this.load.audio('sfx_select', './assets/ahoy.mp3');
+    this.load.audio('sfx_explosion', './assets/gull.mp3');
+    this.load.audio('sfx_parrot', './assets/parrot.mp3');
+    this.load.audio('sfx_rocket', './assets/shoot.mp3');
   }
 
   create() {
@@ -24,7 +25,7 @@ class Menu extends Phaser.Scene {
       fixedWidth: 0
     }
 
-    this.add.text(game.config.width / 2, game.config.height / 2 - borderUISize - borderPadding, "Seagul Control", menuConfig).setOrigin(0.5);
+    this.add.text(game.config.width / 2, game.config.height / 2 - borderUISize - borderPadding, "Pirate Control", menuConfig).setOrigin(0.5);
     this.add.text(game.config.width / 2, game.config.height / 2, "Use mouse to aim & Click to fire", menuConfig).setOrigin(0.5);
     menuConfig.backgroundColor = "#00FF00";
     menuConfig.color = "#000";
